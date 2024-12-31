@@ -1,17 +1,22 @@
 import "./App.css";
-import { useSession } from "./auth/hooks/useSession";
-import { Button } from "./components/ui/button";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 
-function App() {
-  const session = useSession();
+// Import the generated route tree
+import { routeTree } from "./routeTree.gen";
 
-  if (!session) {
-    return <div>No.</div>;
+// Create a new router instance
+const router = createRouter({ routeTree });
+
+// Register the router instance for type safety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
   }
-
+}
+function App() {
   return (
     <>
-      <Button>{session.user?.email}</Button>
+      <RouterProvider router={router} />
     </>
   );
 }
