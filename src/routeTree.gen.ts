@@ -18,6 +18,7 @@ import { Route as rootRoute } from './routes/__root'
 
 const IndexLazyImport = createFileRoute('/')()
 const SignInIndexLazyImport = createFileRoute('/sign-in/')()
+const DashboardIndexLazyImport = createFileRoute('/dashboard/')()
 
 // Create/Update Routes
 
@@ -33,6 +34,14 @@ const SignInIndexLazyRoute = SignInIndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/sign-in/index.lazy').then((d) => d.Route))
 
+const DashboardIndexLazyRoute = DashboardIndexLazyImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/dashboard/index.lazy').then((d) => d.Route),
+)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -42,6 +51,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexLazyImport
       parentRoute: typeof rootRoute
     }
     '/sign-in/': {
@@ -58,36 +74,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/dashboard': typeof DashboardIndexLazyRoute
   '/sign-in': typeof SignInIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/dashboard': typeof DashboardIndexLazyRoute
   '/sign-in': typeof SignInIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/dashboard/': typeof DashboardIndexLazyRoute
   '/sign-in/': typeof SignInIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in'
+  fullPaths: '/' | '/dashboard' | '/sign-in'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in'
-  id: '__root__' | '/' | '/sign-in/'
+  to: '/' | '/dashboard' | '/sign-in'
+  id: '__root__' | '/' | '/dashboard/' | '/sign-in/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  DashboardIndexLazyRoute: typeof DashboardIndexLazyRoute
   SignInIndexLazyRoute: typeof SignInIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  DashboardIndexLazyRoute: DashboardIndexLazyRoute,
   SignInIndexLazyRoute: SignInIndexLazyRoute,
 }
 
@@ -102,11 +123,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/dashboard/",
         "/sign-in/"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/dashboard/": {
+      "filePath": "dashboard/index.lazy.tsx"
     },
     "/sign-in/": {
       "filePath": "sign-in/index.lazy.tsx"
