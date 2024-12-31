@@ -11,7 +11,7 @@ export const Route = createLazyFileRoute("/sign-in/")({
 function RouteComponent() {
   const session = useSession();
 
-  if (session) {
+  if (session.session?.access_token) {
     return (
       <div className="min-h-screen min-w-full flex justify-center items-center">
         <div className="flex flex-row gap-2">
